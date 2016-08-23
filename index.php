@@ -7,6 +7,9 @@ License: GNU General Public License
 https://www.gnu.org/licenses/gpl-3.0.en.html
 */
 
+ini_set('display_errors', 'On');
+error_reporting(E_ALL | E_STRICT);
+
 // set classes for oad objects
 class Structure_desc
 {
@@ -73,16 +76,16 @@ $output_databases = '<u>Connected Databases:</u><br /><ul>';
 foreach($databases->children() as $database) 
 { 
     $output_databases .= '<li><b><a href="' . $database->WEBSITE . '">' . $database->NAME . '</a></b><br />';     
-    $output_databases .= 'Database URL: <a href="' . $database->DATABASE_URL . '">' . $database->DATABASE_URL . '</a>; OAD-File: <a href="' . $database->OAD_FILE . '">' . $database->OAD_FILE . '</a>; License: ' . $database->LICENSE .  ';</li>'; 
+	$output_databases .= 'Database URL: <a href="' . $database->DATABASE_URL . '">' . $database->DATABASE_URL . '</a>; OAD-File: <a href="' . $database->OAD_FILE . '">' . $database->OAD_FILE . '</a>; License: ' . $database->LICENSE .  ';</li>'; 
 
-    // Catch databases results
+	// Catch databases results
     if(simplexml_load_file($database->DATABASE_URL)) 
     {
 		// load oad file
 		if(simplexml_load_file($database->OAD_FILE))
 		{
-		// get all structures
-    	    	$oad = simplexml_load_file($database->OAD_FILE);
+			// get all structures
+    	    $oad = simplexml_load_file($database->OAD_FILE);
 			foreach ($oad->children() as $oad_object => $object) 
 			{ 
 				// Simple check if this structure already exists in our database
@@ -137,7 +140,7 @@ foreach($databases->children() as $database)
 				$structure_object[$structure_object_count] -> texture_file = $object->TEXTURE_FILE;
 				$structure_object[$structure_object_count] -> texture_file_size = $object->TEXTURE_FILE_SIZE;
 				$structure_object[$structure_object_count] -> polygon_count = $object->POLYGON_COUNT;
-				$structure_object_count = $structure_object_count + 1;
+				$structure_object_count++;
 			}
         }
     }
@@ -153,6 +156,9 @@ $output_databases .= '</ul>';
 usort($oad_type, "compare_type");
 // Sort oad structues by name
 usort($oad_structure, "compare_name");
+
+print '<!DOCTYPE html><head><meta charset="utf-8"/><title>Open Anatomy Database overview</title></head><body>';
+
 foreach($oad_type as $type)
 {
 	print '<b><u>' . $type . ':</b></u><br>';
@@ -182,6 +188,6 @@ foreach($oad_type as $type)
     }
 }
 
-print $output_databases;
+print $output_databases . '</body>';
 
 ?>
